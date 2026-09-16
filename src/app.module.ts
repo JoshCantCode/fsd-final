@@ -5,13 +5,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import "dotenv/config";
 import { BullModule } from "@nestjs/bullmq";
 import { AuthModule } from "./auth/auth.module";
-import { CustomerController } from "./customer/customer.controller";
+import { UserController } from "./user/user.controller";
 import { ListingController } from "./listing/listing.controller";
-import { CustomerService } from "./customer/customer.service";
+import { UserService } from "./user/user.service";
 import { ListingService } from "./listing/listing.service";
-import { CustomerModule } from "./customer/customer.module";
+import { UserModule } from "./user/user.module";
 import { ListingModule } from "./listing/listing.module";
-import { LocationModule } from './location/location.module';
+import { LocationModule } from "./location/location.module";
 
 @Module({
   imports: [
@@ -32,11 +32,11 @@ import { LocationModule } from './location/location.module';
       },
     }),
     AuthModule,
-    CustomerModule,
+    UserModule,
     ListingModule,
     LocationModule,
   ],
-  controllers: [AppController, CustomerController, ListingController],
-  providers: [AppService, CustomerService, ListingService],
+  controllers: [AppController, UserController, ListingController],
+  providers: [AppService, UserService, ListingService],
 })
 export class AppModule {}

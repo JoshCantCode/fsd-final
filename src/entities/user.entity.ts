@@ -1,16 +1,24 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
 import Billing from "./billing.entity";
+import { UserRole } from "src/types/user";
 
 /**
- * The customer entity, created when... theres a new customer
+ * The User entity, created when... theres a new User
  */
 @Entity()
-export default class Customer {
+export default class User {
   @PrimaryColumn()
   id!: string;
 
   @Column()
   name!: string;
+
+  @Column({
+    type: "enum",
+    enum: UserRole,
+    default: UserRole.CUSTOMER,
+  })
+  role: UserRole;
 
   @OneToOne(() => Billing)
   @JoinColumn()

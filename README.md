@@ -39,5 +39,5 @@ yarn new fsd-final .
 
 
 # Roles
-- customer
+- User
 - admin
