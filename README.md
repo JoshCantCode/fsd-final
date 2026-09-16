@@ -8,7 +8,7 @@
 
 Framework: NestJS
 Database / ORM: PostgreSQL + TypeORM
-Auth: Better Auth with email/password login
+Auth: NestJS Auth with JWT
 Validation: Zod
 Domain Events: ?
 Background Jobs: BullMQ + Redis
