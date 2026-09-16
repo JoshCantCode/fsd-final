@@ -1,0 +1,25 @@
+name: Lint
+# https://github.com/marketplace/actions/action-eslint
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - uses: sibiraj-s/action-eslint@v4
+        with:
+          eslint-args: "--fix"
+          extensions: 'ts'
+          annotations: true
+          token: ${{ secrets.GITHUB_TOKEN }}
