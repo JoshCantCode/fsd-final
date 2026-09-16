@@ -4,13 +4,14 @@ import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import "dotenv/config";
 import { BullModule } from "@nestjs/bullmq";
-import { AuthModule } from './auth/auth.module';
-import { CustomerController } from './customer/customer.controller';
-import { ListingController } from './listing/listing.controller';
-import { CustomerService } from './customer/customer.service';
-import { ListingService } from './listing/listing.service';
-import { CustomerModule } from './customer/customer.module';
-import { ListingModule } from './listing/listing.module';
+import { AuthModule } from "./auth/auth.module";
+import { CustomerController } from "./customer/customer.controller";
+import { ListingController } from "./listing/listing.controller";
+import { CustomerService } from "./customer/customer.service";
+import { ListingService } from "./listing/listing.service";
+import { CustomerModule } from "./customer/customer.module";
+import { ListingModule } from "./listing/listing.module";
+import { LocationModule } from './location/location.module';
 
 @Module({
   imports: [
@@ -23,7 +24,6 @@ import { ListingModule } from './listing/listing.module';
       database: process.env.DB_DATABASE as string,
       entities: [],
       synchronize: true,
-
     }),
     BullModule.forRoot({
       connection: {
@@ -34,6 +34,7 @@ import { ListingModule } from './listing/listing.module';
     AuthModule,
     CustomerModule,
     ListingModule,
+    LocationModule,
   ],
   controllers: [AppController, CustomerController, ListingController],
   providers: [AppService, CustomerService, ListingService],
