@@ -4,6 +4,13 @@ import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import "dotenv/config";
 import { BullModule } from "@nestjs/bullmq";
+import { AuthModule } from './auth/auth.module';
+import { CustomerController } from './customer/customer.controller';
+import { ListingController } from './listing/listing.controller';
+import { CustomerService } from './customer/customer.service';
+import { ListingService } from './listing/listing.service';
+import { CustomerModule } from './customer/customer.module';
+import { ListingModule } from './listing/listing.module';
 
 @Module({
   imports: [
@@ -24,8 +31,11 @@ import { BullModule } from "@nestjs/bullmq";
         port: process.env.REDIS_PORT as string,
       },
     }),
+    AuthModule,
+    CustomerModule,
+    ListingModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, CustomerController, ListingController],
+  providers: [AppService, CustomerService, ListingService],
 })
 export class AppModule {}
