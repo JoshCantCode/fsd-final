@@ -16,10 +16,7 @@ jobs:
       - uses: mskelton/setup-yarn@v4.0.0
         with:
           node-version: 20
-      - run: yarn
-      - uses: sibiraj-s/action-eslint@v4
-        with:
-          eslint-args: "--fix"
-          extensions: 'ts'
-          annotations: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Yarn
+        run: yarn
+      - name: Run Eslint
+        run: eslint \"{src,apps,libs,test}/**/*.ts\" --fix
