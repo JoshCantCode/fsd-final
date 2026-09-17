@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: mskelton/setup-yarn@v4.0.0
         with:
           node-version: 20
-      - run: npm ci
+      - run: yarn
       - uses: sibiraj-s/action-eslint@v4
         with:
           eslint-args: "--fix"
