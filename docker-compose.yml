@@ -1,0 +1,56 @@
+services:
+  api:
+    image: node:22-alpine
+    container_name: api
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - db
+    ports:
+      - "${APP_PORT}:4000"
+    environment:
+      DB_PORT: 5432
+      DB_USER: root
+      DB_HOST: db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: npm run start:dev
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    hostname: redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+  db:
+    image: postgres:17-alpine
+    container_name: db
+    hostname: db
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+          interval: 10s
+          timeout: 5s
+          retries: 5
+          start_period: 30s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
