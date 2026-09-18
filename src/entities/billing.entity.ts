@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 /**
  * The Billing Entity that all users get. Creating a new user automatically creates this billing entity alongside it
@@ -7,8 +7,11 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
  */
 @Entity()
 export default class Billing {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
+
+  @Column()
+  cardholder_name: string = "John Doe";
 
   @Column()
   card_number: string = "4242424242424242";

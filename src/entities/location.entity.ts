@@ -3,7 +3,7 @@ import Listing from "./listing.entity";
 
 @Entity()
 export default class Location {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column()

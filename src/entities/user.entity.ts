@@ -1,13 +1,21 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import Billing from "./billing.entity";
 import { UserRole } from "src/types/user";
+import Booking from "./order.entity";
 
 /**
  * The User entity, created when... theres a new User
  */
 @Entity()
 export default class User {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column()
@@ -26,4 +34,7 @@ export default class User {
   @OneToOne(() => Billing)
   @JoinColumn()
   billing: Billing;
+
+  @OneToMany(() => Booking, (b) => b.user)
+  bookings: Booking[];
 }

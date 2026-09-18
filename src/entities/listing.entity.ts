@@ -1,13 +1,15 @@
 import { ListingType } from "src/types/listing";
-import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import Location from "./location.entity";
+import Order from "./order.entity";
+import { OneToMany } from "typeorm/browser";
 
 /**
  * The Listing entity is an individual listing of a room in a Location
  */
 @Entity()
 export default class Listing {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column({
@@ -24,6 +26,9 @@ export default class Listing {
 
   @ManyToOne(() => Location, (location) => location.listings)
   location: Location;
+
+  @OneToMany(() => Order, (o) => o.listing)
+  orders: Order[];
 
   @Column()
   available: boolean = true;
