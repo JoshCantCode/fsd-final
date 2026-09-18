@@ -18,12 +18,23 @@ Tests: Jest
 Infra: docker compose
 Project Management: Github Kanban Board
 
+
+# ERD 
+
+
 # Routes:
 - /register - POST
 - /login - POST
-- /listings - GET
+
+- /user - GET
+- /user/:id - GET,POST,PATCH
+
+- /listing - GET
 - /listing/:id - GET, POST, PATCH
 - /listing/:id/book - POST
+
+- /location - GET
+- /location/:id - GET,POST,PATCH
 
 # Architecture
 Basically how to recreate the project, in steps
@@ -34,7 +45,6 @@ yarn init
 npm install -g @nestjs/cli # yarn has no global command
 yarn new fsd-final .
 ```
-
 
 
 
