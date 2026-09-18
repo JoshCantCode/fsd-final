@@ -22,7 +22,8 @@ import { LocationModule } from "./location/location.module";
       username: process.env.DB_USER as string,
       password: process.env.DB_PASSWORD as string,
       database: process.env.DB_DATABASE as string,
-      entities: [],
+      entities: ["dist/**/*.entity.js"],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     BullModule.forRoot({
@@ -36,7 +37,7 @@ import { LocationModule } from "./location/location.module";
     ListingModule,
     LocationModule,
   ],
-  controllers: [AppController, UserController, ListingController],
-  providers: [AppService, UserService, ListingService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -8,16 +8,16 @@ import { Repository } from "typeorm";
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async getUsers(): Promise<User[]> {
     return await this.userRepository.find();
   }
 
-  async getUser(id: string) {
-    return await this.userRepository.findOneBy({
-      id,
+  async getUser(id: string): Promise<User> {
+    return await this.userRepository.findOneOrFail({
+      where: { id },
     });
   }
 
