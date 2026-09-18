@@ -2,6 +2,10 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import User from "./user.entity";
 import Listing from "./listing.entity";
 
+
+/**
+ * An order is created after a user successfully pays for a booking.
+ */
 @Entity()
 export default class Order {
   @PrimaryGeneratedColumn("uuid")
@@ -17,4 +21,9 @@ export default class Order {
     type: "datetime",
   })
   arrival: Date;
+
+  @Column({
+    type: "datetime",
+  })
+  departure: Date;
 }
