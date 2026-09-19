@@ -9,12 +9,12 @@ services:
     ports:
       - "${APP_PORT}:4000"
     environment:
-      DB_PORT: 5432
-      DB_USER: root
-      DB_HOST: db
-      DB_PASSWORD: admin
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_HOST: ${DB_HOST}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
     working_dir: /app
     volumes:
@@ -50,25 +50,6 @@ services:
           start_period: 30s
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4:9.8
-    hostname: pgadmin
-    container_name: pgadmin
-    restart: unless-stopped
-    ports:
-      - 5050:80
-    environment:
-      # https://docs.docker.com/guides/pgadmin/
-      PGADMIN_DEFAULT_EMAIL: test@fsd.com
-      PGADMIN_DEFAULT_PASSWORD: fsd
-
-      # no login, above is still required tho
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-
-      # Don't require a "master" password after logging in
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
-
 volumes:
   postgres_data:
     driver: local
