@@ -1,6 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Listing from "./listing.entity";
 
+/**
+ * A location is a venue. Can be a hotel, inn, etc
+ */
 @Entity()
 export default class Location {
   @PrimaryGeneratedColumn("uuid")
