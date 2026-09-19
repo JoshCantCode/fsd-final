@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { ListingModule } from "./listing/listing.module";
 import { LocationModule } from "./location/location.module";
+import { BillingModule } from "./billing/billing.module";
 
 @Module({
   imports: [
@@ -20,7 +21,11 @@ import { LocationModule } from "./location/location.module";
       database: process.env.DB_DATABASE as string,
       entities: ["dist/**/*.entity.js"],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
+
+      // migrations
+      migrations: [__dirname + "/migrations/**/*{.js,.ts}"],
+
     }),
     BullModule.forRoot({
       connection: {
@@ -32,6 +37,7 @@ import { LocationModule } from "./location/location.module";
     UserModule,
     ListingModule,
     LocationModule,
+    BillingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
