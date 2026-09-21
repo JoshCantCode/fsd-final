@@ -40,15 +40,9 @@
 # Architecture
 Basically how to recreate the project, in steps
 
-## Create project
-```sh
-yarn init
-npm install -g @nestjs/cli # yarn has no global command
-yarn new fsd-final .
-```
-
 
 
 # Roles
-- User
-- admin
+- User (read-only apart from write in listing)
+- Admin (can edit anything)
+- Manager (of a single location)
