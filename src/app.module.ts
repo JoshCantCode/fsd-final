@@ -13,6 +13,7 @@ import { BillingModule } from "./billing/billing.module";
 @Module({
   imports: [
     TypeOrmModule.forRoot({
+      logging: true,
       type: "postgres",
       host: process.env.DB_HOST as string,
       port: Number(process.env.DB_PORT),
@@ -25,7 +26,6 @@ import { BillingModule } from "./billing/billing.module";
 
       // migrations
       migrations: [__dirname + "/migrations/**/*{.js,.ts}"],
-
     }),
     BullModule.forRoot({
       connection: {

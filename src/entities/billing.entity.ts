@@ -7,7 +7,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
  */
 @Entity()
 export default class Billing {
-
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 

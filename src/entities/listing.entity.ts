@@ -1,8 +1,13 @@
 import { ListingType } from "src/types/listing";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  OneToMany,
+} from "typeorm";
 import Location from "./location.entity";
 import Order from "./order.entity";
-import { OneToMany } from "typeorm/browser";
 
 /**
  * The Listing entity is an individual listing of a room in a Location
