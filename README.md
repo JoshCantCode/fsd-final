@@ -6,17 +6,18 @@
 
 # Tech Stack:
 
-Framework: NestJS
-Database / ORM: PostgreSQL + TypeORM
-Auth: NestJS Auth with JWT
-Validation: Zod
-Domain Events: ?
-Background Jobs: BullMQ + Redis
-Email: ?
-Realtime: ? not needed?
-Tests: Jest
-Infra: docker compose
-Project Management: Github Kanban Board
+| Section | Choice |
+|---------|--------|
+|Framework | NestJS |
+|Database/ORM | PostgreSQL + TypeORM |
+| Auth | NestJS Auth with JWT |
+| Validation | ? |
+| Domain Events | ? |
+| Background Jobs | BullMQ + Redis |
+| Email | ? |
+| Realtime | Notifications |
+| Tests | Jest |
+| Infra | Docker |
 
 
 # ERD 
