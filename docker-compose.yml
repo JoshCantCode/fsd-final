@@ -9,11 +9,11 @@ services:
     ports:
       - "${APP_PORT}:4000"
     environment:
-      DB_PORT: ${DB_PORT}
+      DB_PORT: 5432
       DB_USER: ${DB_USER}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: db
       DB_PASSWORD: ${DB_PASSWORD}
-      REDIS_HOST: ${REDIS_HOST}
+      REDIS_HOST: redis
       REDIS_PORT: ${REDIS_PORT}
 
     working_dir: /app
