@@ -8,8 +8,8 @@
 
 | Section | Choice |
 |---------|--------|
-|Framework | NestJS |
-|Database/ORM | PostgreSQL + TypeORM |
+| Framework | NestJS |
+| Database/ORM | PostgreSQL + TypeORM |
 | Auth | NestJS Auth with JWT |
 | Validation | ? |
 | Domain Events | ? |
