@@ -25,7 +25,7 @@ import { BillingModule } from "./billing/billing.module";
       synchronize: false,
 
       // migrations
-      migrations: [__dirname + "/migrations/**/*{.js,.ts}"],
+      migrations: ["src/migrations/**/*{.js,.ts}"],
     }),
     BullModule.forRoot({
       connection: {

@@ -1,6 +1,15 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import { UserService } from "./user.service";
 import type CreateUserDto from "src/dtos/create-user.dto";
+import IsAdmin from "src/guards/is-admin.guard";
 
 @Controller("user")
 export class UserController {
@@ -19,5 +28,11 @@ export class UserController {
   @Post()
   async createUser(@Body() body: CreateUserDto) {
     return await this.userService.createUser(body);
+  }
+
+  @Delete(":id")
+  @UseGuards(IsAdmin)
+  async deleteUser(@Param("id") id: string) {
+    return await this.userService.deleteUser(id);
   }
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import CreateUserDto from "src/dtos/create-user.dto";
 import Billing from "src/entities/billing.entity";
 import User from "src/entities/user.entity";
+import { UserRole } from "src/types/user";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -13,6 +14,7 @@ export class UserService {
   ) {}
 
   async getUsers(): Promise<User[]> {
+    // fetch all users with their relationships loaded
     const users = await this.userRepository.find({
       relations: {
         bookings: true,
@@ -31,25 +33,37 @@ export class UserService {
   }
 
   async getUser(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: {
-        bookings: true,
-        billing: true,
-      },
-    });
+    // fetch one user with their relationships loaded
 
-    if (!user) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id },
+        relations: {
+          bookings: true,
+          billing: true,
+        },
+      });
+
+      if (!user) {
+        throw new HttpException(
+          `Could not find user ${id}`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return user;
+    } catch (cause) {
       throw new HttpException(
-        `Couldn't find user with ID: ${id}`,
-        HttpStatus.NOT_FOUND,
+        `Error finding user ${id}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause,
+        },
       );
     }
-
-    return user;
   }
 
-  async createUser({ name, email }: CreateUserDto) {
+  async createUser({ name, email, role }: CreateUserDto) {
     // create billing object
     try {
       const billing = new Billing();
@@ -61,6 +75,9 @@ export class UserService {
         user.billing = billing;
         user.name = name;
         user.email = email;
+        if (role && role == 2) {
+          user.role = UserRole.ADMIN;
+        }
         await this.userRepository.manager.save(user);
       } catch (cause) {
         throw new HttpException(
@@ -71,12 +88,22 @@ export class UserService {
           },
         );
       }
-
-      return {
-        name,
-        email,
-        billing,
-      };
+      // create a key with base64
+      const key = btoa(`$${name}-${email}`);
+      if (role == 2) {
+        return {
+          name,
+          email,
+          billing,
+          key,
+        };
+      } else {
+        return {
+          name,
+          email,
+          billing,
+        };
+      }
     } catch (cause) {
       throw new HttpException(
         `Error creating billing for user ${name}`,
@@ -86,5 +113,37 @@ export class UserService {
         },
       );
     }
+  }
+
+  async deleteUser(id: string) {
+    try {
+      await this.userRepository.delete({
+        id,
+      });
+
+      return {
+        status: 200,
+        message: `Successfully deleted user #{id}`,
+      };
+    } catch (cause) {
+      throw new HttpException(
+        `Error deleting user ${id}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause,
+        },
+      );
+    }
+  }
+
+  async checkAdminKey(key: string): Promise<boolean> {
+    const [name, email] = atob(key);
+    const admin = await this.userRepository.findOneBy({
+      name,
+      email,
+      role: UserRole.ADMIN,
+    });
+
+    return admin != null;
   }
 }
