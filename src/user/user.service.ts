@@ -89,7 +89,7 @@ export class UserService {
         );
       }
       // create a key with base64
-      const key = btoa(`$${name}-${email}`);
+      const key = btoa(`${name}-${email}`);
       if (role == 2) {
         return {
           name,
@@ -137,7 +137,9 @@ export class UserService {
   }
 
   async checkAdminKey(key: string): Promise<boolean> {
-    const [name, email] = atob(key);
+    const [name, email] = atob(key).split("-");
+    console.log(atob(key));
+    console.log(name, email);
     const admin = await this.userRepository.findOneBy({
       name,
       email,
