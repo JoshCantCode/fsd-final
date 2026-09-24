@@ -37,12 +37,20 @@
 - /location - GET
 - /location/:id - GET,POST,PATCH
 
-# Architecture
-Basically how to recreate the project, in steps
-
-
-
 # Roles
 - User (read-only apart from write in listing)
 - Admin (can edit anything)
 - Manager (of a single location)
+
+
+# The user flow
+
+1. Create account via POST /register
+2.Auth check, create new account via POST /user
+3. Now authenticated to access all other customer-related endpoints
+
+
+# The admin flow
+1. Create account via POST /register, setting admin=true, and there must be an X-admin-key header with the admin key
+2. Auth check, creates new admin account via POST /user
+3. You can now do anything you want, have fun
