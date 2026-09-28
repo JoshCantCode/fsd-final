@@ -116,14 +116,13 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
+    const user = await this.getUser(id);
     try {
-      await this.userRepository.delete({
-        id,
-      });
+      await this.userRepository.delete(user);
 
       return {
         status: 200,
-        message: `Successfully deleted user #{id}`,
+        message: `Successfully deleted user ${id}`,
       };
     } catch (cause) {
       throw new HttpException(
