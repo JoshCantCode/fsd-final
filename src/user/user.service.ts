@@ -3,14 +3,16 @@ import { InjectRepository } from "@nestjs/typeorm";
 import CreateUserDto from "src/dtos/create-user.dto";
 import Billing from "src/entities/billing.entity";
 import User from "src/entities/user.entity";
+import { LocationService } from "src/location/location.service";
 import { UserRole } from "src/types/user";
-import { Repository } from "typeorm";
+import { FindOneOptions, Repository } from "typeorm";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly locationService: LocationService,
   ) {}
 
   async getUsers(): Promise<User[]> {
@@ -30,6 +32,26 @@ export class UserService {
     }
 
     return users;
+  }
+
+  async findUser(options: FindOneOptions<User>) {
+    try {
+      const user = await this.userRepository.findOne(options);
+
+      if (!user) {
+        throw new HttpException(`Could not find user`, HttpStatus.NOT_FOUND);
+      }
+
+      return user;
+    } catch (cause) {
+      throw new HttpException(
+        `Error finding user`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause,
+        },
+      );
+    }
   }
 
   async getUser(id: string): Promise<User> {
@@ -115,6 +137,25 @@ export class UserService {
     }
   }
 
+  // adds a location to the users watchlist
+  // when any of the locations they are watching post a new listing, the user is notified
+  async addToWatchlist({
+    userId,
+    locationId,
+  }: {
+    userId: string;
+    locationId: string;
+  }) {
+    const user = await this.getUser(userId);
+    const location = await this.locationService.getLocation(locationId);
+
+    user.watchlist.push(location);
+    return {
+      status: 200,
+      message: "Location added to users watchlist!",
+    };
+  }
+
   async deleteUser(id: string) {
     const user = await this.getUser(id);
     try {
@@ -133,18 +174,5 @@ export class UserService {
         },
       );
     }
-  }
-
-  async checkAdminKey(key: string): Promise<boolean> {
-    const [name, email] = atob(key).split("-");
-    console.log(atob(key));
-    console.log(name, email);
-    const admin = await this.userRepository.findOneBy({
-      name,
-      email,
-      role: UserRole.ADMIN,
-    });
-
-    return admin != null;
   }
 }
