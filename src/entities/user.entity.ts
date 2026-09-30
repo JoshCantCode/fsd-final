@@ -2,6 +2,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -9,6 +11,7 @@ import {
 import Billing from "./billing.entity";
 import { UserRole } from "src/types/user";
 import Booking from "./order.entity";
+import Location from "./location.entity";
 
 /**
  * The User entity, created when... theres a new User
@@ -37,4 +40,8 @@ export default class User {
 
   @OneToMany(() => Booking, (b) => b.user)
   bookings: Booking[];
+
+  @ManyToMany(() => Location)
+  @JoinTable()
+  watchlist: Location[];
 }
