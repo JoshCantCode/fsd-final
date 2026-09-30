@@ -9,6 +9,7 @@ import { UserModule } from "./user/user.module";
 import { ListingModule } from "./listing/listing.module";
 import { LocationModule } from "./location/location.module";
 import { BillingModule } from "./billing/billing.module";
+import { NotificationModule } from "./notification/notification.module";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { BillingModule } from "./billing/billing.module";
     ListingModule,
     LocationModule,
     BillingModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
