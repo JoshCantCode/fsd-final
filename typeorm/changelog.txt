@@ -1,0 +1,16 @@
+# TypeORM Schema Changes - 2026-09-30T13:59:16.976Z
+
+- ALTER Migration: migrations/1790776756974-alter-user.ts
+- Updated Entity: entities/User.ts
+  - Added columns: emailVerified, image, createdAt, updatedAt
+  - Removed columns: role, billingId
+
+- CREATE Migration: migrations/1790776756974-create-session.ts
+- Entity: entities/Session.ts
+
+- CREATE Migration: migrations/1790776756974-create-account.ts
+- Entity: entities/Account.ts
+
+- CREATE Migration: migrations/1790776756974-create-verification.ts
+- Entity: entities/Verification.ts
+

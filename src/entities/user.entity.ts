@@ -4,6 +4,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -30,9 +31,16 @@ export default class User {
   @Column({
     type: "enum",
     enum: UserRole,
-    default: UserRole.CUSTOMER,
+    default: UserRole.MEMBER,
   })
   role: UserRole;
+
+  @Column("uuid", { name: "locationId", nullable: true })
+  locationId: string | null;
+
+  @ManyToOne(() => Location, { nullable: true, onDelete: "SET NULL" })
+  @JoinColumn({ name: "locationId" })
+  managedLocation: Location | null;
 
   @OneToOne(() => Billing)
   @JoinColumn()
@@ -44,4 +52,22 @@ export default class User {
   @ManyToMany(() => Location)
   @JoinTable()
   watchlist: Location[];
+
+  @Column("boolean", { name: "emailVerified", default: false })
+  emailVerified!: boolean;
+
+  @Column("text", { name: "image", nullable: true })
+  image: string | null;
+
+  @Column("timestamptz", {
+    name: "createdAt",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  createdAt!: Date;
+
+  @Column("timestamptz", {
+    name: "updatedAt",
+    default: () => "CURRENT_TIMESTAMP",
+  })
+  updatedAt!: Date;
 }

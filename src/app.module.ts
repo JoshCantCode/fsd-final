@@ -4,15 +4,17 @@ import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import "dotenv/config";
 import { BullModule } from "@nestjs/bullmq";
-import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { ListingModule } from "./listing/listing.module";
 import { LocationModule } from "./location/location.module";
 import { BillingModule } from "./billing/billing.module";
 import { NotificationModule } from "./notification/notification.module";
+import { AuthModule } from "@thallesp/nestjs-better-auth";
+import { auth } from "./lib/auth";
 
 @Module({
   imports: [
+    AuthModule.forRoot({ auth }),
     TypeOrmModule.forRoot({
       logging: true,
       type: "postgres",
@@ -34,7 +36,6 @@ import { NotificationModule } from "./notification/notification.module";
         port: process.env.REDIS_PORT as string,
       },
     }),
-    AuthModule,
     UserModule,
     ListingModule,
     LocationModule,

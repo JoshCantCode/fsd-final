@@ -17,30 +17,20 @@ export class LocationService {
   }
 
   async getLocation(id: string) {
-    try {
-      const location = await this.locationRepository.findOne({
-        where: {
-          id,
-        },
-      });
+    const location = await this.locationRepository.findOne({
+      where: {
+        id,
+      },
+    });
 
-      if (!location) {
-        throw new HttpException(
-          "Could not find this location",
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return location;
-    } catch (cause) {
+    if (!location) {
       throw new HttpException(
-        "An error occured trying to fetch the location",
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        {
-          cause,
-        },
+        "Could not find this location",
+        HttpStatus.NOT_FOUND,
       );
     }
+
+    return location;
   }
 
   async getListings(id: string): Promise<Listing[]> {
@@ -59,7 +49,6 @@ export class LocationService {
   }
 
   async createLocation({ name, city, country }: CreateLocationDto) {
-    // create location
     try {
       const location = new Location();
 

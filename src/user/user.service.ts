@@ -1,8 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import CreateUserDto from "src/dtos/create-user.dto";
+import SetUserRoleDto from "src/dtos/set-user-role.dto";
 import Billing from "src/entities/billing.entity";
 import User from "src/entities/user.entity";
+import type { SessionUser } from "src/types/user";
 import { LocationService } from "src/location/location.service";
 import { UserRole } from "src/types/user";
 import { FindOneOptions, Repository } from "typeorm";
@@ -15,8 +24,28 @@ export class UserService {
     private readonly locationService: LocationService,
   ) {}
 
+  async getUsersAs(actor: SessionUser): Promise<User[]> {
+    if (actor.role >= UserRole.ADMIN) {
+      return await this.getUsers();
+    }
+
+    return [await this.getUser(actor.id)];
+  }
+
+  async getUserAs(id: string, actor: SessionUser): Promise<User> {
+    this.assertCanReadUser(actor, id);
+    return await this.getUser(id);
+  }
+
+  private assertCanReadUser(actor: SessionUser, id: string) {
+    if (actor.role >= UserRole.ADMIN) return;
+
+    if (actor.id !== id) {
+      throw new ForbiddenException("You can only read your own user record");
+    }
+  }
+
   async getUsers(): Promise<User[]> {
-    // fetch all users with their relationships loaded
     const users = await this.userRepository.find({
       relations: {
         bookings: true,
@@ -55,80 +84,51 @@ export class UserService {
   }
 
   async getUser(id: string): Promise<User> {
-    // fetch one user with their relationships loaded
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        bookings: true,
+        billing: true,
+      },
+    });
 
-    try {
-      const user = await this.userRepository.findOne({
-        where: { id },
-        relations: {
-          bookings: true,
-          billing: true,
-        },
-      });
-
-      if (!user) {
-        throw new HttpException(
-          `Could not find user ${id}`,
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return user;
-    } catch (cause) {
+    if (!user) {
       throw new HttpException(
-        `Error finding user ${id}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        {
-          cause,
-        },
+        `Could not find user ${id}`,
+        HttpStatus.NOT_FOUND,
       );
     }
+
+    return user;
   }
 
-  async createUser({ name, email, role }: CreateUserDto) {
-    // create billing object
+  async createUser({ name, email }: CreateUserDto) {
+    const existing = await this.userRepository.findOneBy({ email });
+
+    if (existing) {
+      throw new ConflictException(`A user with email ${email} already exists`);
+    }
+
     try {
       const billing = new Billing();
       await this.userRepository.manager.save(billing);
 
-      // create user and add the billing object to it
-      try {
-        const user = new User();
-        user.billing = billing;
-        user.name = name;
-        user.email = email;
-        if (role && role == 2) {
-          user.role = UserRole.ADMIN;
-        }
-        await this.userRepository.manager.save(user);
-      } catch (cause) {
-        throw new HttpException(
-          `Error creating user ${name}`,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          {
-            cause,
-          },
-        );
-      }
-      // create a key with base64
-      const key = btoa(`${name}-${email}`);
-      if (role == 2) {
-        return {
-          name,
-          email,
-          billing,
-          key,
-        };
-      } else {
-        return {
-          name,
-          email,
-          billing,
-        };
-      }
+      const user = new User();
+      user.billing = billing;
+      user.name = name;
+      user.email = email;
+
+      await this.userRepository.manager.save(user);
+
+      return {
+        id: user.id,
+        name,
+        email,
+        billing,
+      };
     } catch (cause) {
       throw new HttpException(
-        `Error creating billing for user ${name}`,
+        `Error creating user ${name}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
         {
           cause,
@@ -137,8 +137,32 @@ export class UserService {
     }
   }
 
-  // adds a location to the users watchlist
-  // when any of the locations they are watching post a new listing, the user is notified
+  async setRole(id: string, { role, locationId }: SetUserRoleDto) {
+    const user = await this.getUser(id);
+
+    user.role = role;
+
+    if (role === UserRole.MANAGER) {
+      if (!locationId) {
+        throw new BadRequestException("A manager must be given a locationId");
+      }
+
+      await this.locationService.getLocation(locationId);
+      user.locationId = locationId;
+    } else {
+      user.locationId = null;
+    }
+
+    await this.userRepository.save(user);
+
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      locationId: user.locationId,
+    };
+  }
+
   async addToWatchlist({
     userId,
     locationId,
@@ -157,9 +181,10 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
-    const user = await this.getUser(id);
     try {
-      await this.userRepository.delete(user);
+      await this.userRepository.delete({
+        id,
+      });
 
       return {
         status: 200,

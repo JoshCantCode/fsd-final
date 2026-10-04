@@ -29,9 +29,7 @@ export default class Listing {
   })
   price: number;
 
-  @ManyToOne(() => Location, (location) => location.listings, {
-    cascade: true,
-  })
+  @ManyToOne(() => Location, (location) => location.listings)
   location: Location;
 
   @OneToMany(() => Order, (o) => o.listing)
