@@ -14,7 +14,14 @@ import { auth } from "./lib/auth";
 
 @Module({
   imports: [
-    AuthModule.forRoot({ auth }),
+    AuthModule.forRoot({
+      auth,
+      bodyParser: {
+        json: { limit: "2mb" },
+        urlencoded: { limit: "2mb", extended: true },
+        rawBody: true,
+      },
+    }),
     TypeOrmModule.forRoot({
       logging: true,
       type: "postgres",
