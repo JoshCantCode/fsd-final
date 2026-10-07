@@ -14,7 +14,8 @@ import User from "src/entities/user.entity";
 import type { SessionUser } from "src/types/user";
 import { LocationService } from "src/location/location.service";
 import { UserRole } from "src/types/user";
-import { FindOneOptions, Repository } from "typeorm";
+import { ArrayContains, FindOneOptions, Repository } from "typeorm";
+import Notification from "src/entities/notification.entity";
 
 @Injectable()
 export class UserService {
@@ -43,6 +44,10 @@ export class UserService {
     if (actor.id !== id) {
       throw new ForbiddenException("You can only read your own user record");
     }
+  }
+
+  async saveUser(user: User) {
+    return await this.userRepository.save(user);
   }
 
   async getUsers(): Promise<User[]> {
@@ -119,6 +124,7 @@ export class UserService {
       user.email = email;
 
       await this.userRepository.manager.save(user);
+      // todo: add notification
 
       return {
         id: user.id,
@@ -178,6 +184,20 @@ export class UserService {
       status: 200,
       message: "Location added to users watchlist!",
     };
+  }
+
+  async getUsersWhoAreWatching(locationId: string) {
+    const location = await this.locationService.getLocation(locationId);
+
+    return await this.userRepository.find({
+      where: { watchlist: ArrayContains([location]) },
+    });
+  }
+
+  async getAdmins() {
+    return await this.userRepository.findBy({
+      role: UserRole.ADMIN,
+    });
   }
 
   async deleteUser(id: string) {
