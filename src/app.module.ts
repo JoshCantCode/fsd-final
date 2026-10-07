@@ -11,6 +11,7 @@ import { BillingModule } from "./billing/billing.module";
 import { NotificationModule } from "./notification/notification.module";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { auth } from "./lib/auth";
+import { dbOptions } from "./datasource.config";
 
 @Module({
   imports: [
@@ -23,25 +24,18 @@ import { auth } from "./lib/auth";
       },
     }),
     TypeOrmModule.forRoot({
-      logging: true,
-      type: "postgres",
-      host: process.env.DB_HOST as string,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USER as string,
-      password: process.env.DB_PASSWORD as string,
-      database: process.env.DB_DATABASE as string,
-      entities: ["dist/**/*.entity.js"],
+      ...dbOptions,
+      migrations: undefined,
       autoLoadEntities: true,
-      synchronize: false,
-
-      // migrations
-      migrations: ["src/migrations/**/*{.js,.ts}"],
     }),
     BullModule.forRoot({
       connection: {
-        host: process.env.REDIS_HOST as string,
-        port: process.env.REDIS_PORT as string,
+        host: process.env.REDIS_HOST ?? "localhost",
+        port: Number(process.env.REDIS_PORT),
       },
+    }),
+    BullModule.registerQueue({
+      name: "notification",
     }),
     UserModule,
     ListingModule,

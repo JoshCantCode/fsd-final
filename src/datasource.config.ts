@@ -1,8 +1,7 @@
-import { DataSource } from "typeorm";
+import { DataSource, type DataSourceOptions } from "typeorm";
 import "dotenv/config";
 
-// I might be able to reuse this in app.module.ts but for now we leave it
-export const datasource = new DataSource({
+export const dbOptions: DataSourceOptions = {
   logging: true,
   type: "postgres",
   host: process.env.DB_HOST,
@@ -12,7 +11,7 @@ export const datasource = new DataSource({
   database: process.env.DB_DATABASE as string,
   entities: ["dist/**/*.entity.js"],
   synchronize: false,
-
-  // migrations
   migrations: ["src/migrations/**/*{.js,.ts}"],
-});
+};
+
+export const datasource = new DataSource(dbOptions);
