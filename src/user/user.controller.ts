@@ -45,4 +45,16 @@ export class UserController {
   async deleteUser(@Param("id") id: string) {
     return await this.userService.deleteUser(id);
   }
+
+  @Patch("watch/:locationId")
+  @RequireRole(UserRole.MEMBER)
+  async watchLocation(
+    @AuthUser() user: SessionUser,
+    @Param("locationId") locationId: string,
+  ) {
+    return await this.userService.addToWatchlist({
+      userId: user.id,
+      locationId,
+    });
+  }
 }
