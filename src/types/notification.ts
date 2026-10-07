@@ -38,8 +38,6 @@ type LocationDeletedMetadata = {
 
 type OrderCreatedMetadata = {
   orderId: string;
-  listingId: string;
-  userId: string;
 };
 
 type OrderPaidMetadata = {
@@ -52,7 +50,7 @@ type OrderFailedMetadata = {
 };
 
 type ListingCreatedMetadata = {
-  orderId: string;
+  listingId: string;
 };
 
 export type NotificationMetadata =
