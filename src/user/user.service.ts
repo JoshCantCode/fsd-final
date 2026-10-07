@@ -94,6 +94,7 @@ export class UserService {
       relations: {
         bookings: true,
         billing: true,
+        watchlist: true,
       },
     });
 
