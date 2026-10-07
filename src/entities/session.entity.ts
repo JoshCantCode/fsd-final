@@ -35,7 +35,7 @@ export class Session {
   userAgent: string | null;
 
   @Index("session_userId_idx")
-  @Column("text", { name: "userId" })
+  @Column("uuid", { name: "userId" })
   userId!: string;
 
   @ManyToOne(() => User, { onDelete: "CASCADE", nullable: false })

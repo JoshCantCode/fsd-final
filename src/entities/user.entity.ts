@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -13,6 +14,7 @@ import Billing from "./billing.entity";
 import { UserRole } from "src/types/user";
 import Booking from "./order.entity";
 import Location from "./location.entity";
+import Notification from "./notification.entity";
 
 /**
  * The User entity, created when... theres a new User
@@ -25,6 +27,7 @@ export default class User {
   @Column()
   name!: string;
 
+  @Index("IDX_user_email", { unique: true })
   @Column()
   email!: string;
 
@@ -52,6 +55,10 @@ export default class User {
   @ManyToMany(() => Location)
   @JoinTable()
   watchlist: Location[];
+
+  @ManyToMany(() => Notification)
+  @JoinTable()
+  notifications: Notification[];
 
   @Column("boolean", { name: "emailVerified", default: false })
   emailVerified!: boolean;
