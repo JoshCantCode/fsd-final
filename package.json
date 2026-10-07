@@ -20,8 +20,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-esm",
-    "migration:generate": "yarn typeorm migration:generate -p src/migrations -d src/datasource.config.ts",
-    "migrate": "yarn run typeorm migration:run -d src/datasource.config.ts"
+    "migration:generate": "NODE_ENV=migration yarn typeorm migration:generate src/migrations/ -d src/datasource.config.ts && yarn lint",
+    "migrate": "NODE_ENV=migration yarn run typeorm migration:run -d src/datasource.config.ts && yarn lint"
   },
   "dependencies": {
     "@hedystia/better-auth-typeorm": "^1.1.1",

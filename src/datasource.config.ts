@@ -4,7 +4,7 @@ import "dotenv/config";
 export const dbOptions: DataSourceOptions = {
   logging: true,
   type: "postgres",
-  host: process.env.DB_HOST,
+  host: process.env.NODE_ENV == "migration" ? "localhost" : process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USER as string,
   password: process.env.DB_PASSWORD as string,
