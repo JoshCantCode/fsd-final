@@ -180,6 +180,7 @@ export class UserService {
     const location = await this.locationService.getLocation(locationId);
 
     user.watchlist.push(location);
+    await this.userRepository.save(user);
     return {
       status: 200,
       message: "Location added to users watchlist!",
