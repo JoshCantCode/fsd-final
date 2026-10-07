@@ -1,16 +1,25 @@
+import { InjectQueue } from "@nestjs/bullmq";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Queue } from "bullmq";
 import CreateNotificationDto from "src/dtos/create-notification.dto";
 import Notification from "src/entities/notification.entity";
-import { ADMIN_NOTIFICATIONS } from "src/types/notification";
+import { ADMIN_NOTIFICATIONS, NotificationType } from "src/types/notification";
 import { Repository } from "typeorm";
 
 @Injectable()
 export class NotificationService {
   constructor(
+    @InjectQueue("notification") private queue: Queue,
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
   ) {}
+
+  async getLastNotification(type: NotificationType) {
+    return await this.notificationRepository.findOne({
+      where: { type },
+    });
+  }
 
   async getNotification(id: string) {
     try {
@@ -52,7 +61,15 @@ export class NotificationService {
     notification.message = message;
     notification.metadata = metadata;
 
+    // is this a race condition between the queue processor and notifications being saved?
     await this.notificationRepository.manager.save(notification);
-    // send an event
+    await this.queue.add(
+      NotificationType[type],
+      {
+        message,
+        metadata,
+      },
+      { lifo: true },
+    );
   }
 }
