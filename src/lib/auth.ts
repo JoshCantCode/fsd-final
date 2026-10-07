@@ -25,5 +25,6 @@ export const auth = betterAuth({
       },
     },
   },
-  advanced: { database: { generateId: "uuid" } },
+  // remove disableCSRFCheck when frontend
+  advanced: { database: { generateId: "uuid" }, disableCSRFCheck: true },
 });
