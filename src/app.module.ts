@@ -12,6 +12,7 @@ import { NotificationModule } from "./notification/notification.module";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { auth } from "./lib/auth";
 import { dbOptions } from "./datasource.config";
+import { OrderModule } from "./order/order.module";
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { dbOptions } from "./datasource.config";
     LocationModule,
     BillingModule,
     NotificationModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

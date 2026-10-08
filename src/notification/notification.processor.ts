@@ -25,6 +25,8 @@ export default class NotificationProcessor extends WorkerHost {
     // afaik this is the only way
     // todo: when frontend, add to notifications inbox
     // todo: when email, send email to user email
+
+    // send to admins
     const admins = await this.userService.getAdmins();
     for (const a of admins) {
       a.notifications.push(notification);
