@@ -16,6 +16,9 @@ import { LocationService } from "src/location/location.service";
 import { UserRole } from "src/types/user";
 import { ArrayContains, FindOneOptions, Repository } from "typeorm";
 import Notification from "src/entities/notification.entity";
+import { InjectQueue } from "@nestjs/bullmq";
+import { Queue } from "bullmq";
+import { NotificationType } from "src/types/notification";
 
 @Injectable()
 export class UserService {
@@ -23,6 +26,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly locationService: LocationService,
+    @InjectQueue("notification") private readonly queue: Queue,
   ) {}
 
   async getUsersAs(actor: SessionUser): Promise<User[]> {
@@ -129,15 +133,11 @@ export class UserService {
       user.name = name;
       user.email = email;
 
-      await this.userRepository.manager.save(user);
-      // todo: add notification
+      await this.queue.add(NotificationType[NotificationType.USER_CREATED], {
+        userId: user.id,
+      });
 
-      return {
-        id: user.id,
-        name,
-        email,
-        billing,
-      };
+      return await this.userRepository.manager.save(user);
     } catch (cause) {
       throw new HttpException(
         `Error creating user ${name}`,

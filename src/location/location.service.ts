@@ -4,12 +4,16 @@ import { Repository } from "typeorm";
 import Location from "src/entities/location.entity";
 import Listing from "src/entities/listing.entity";
 import CreateLocationDto from "src/dtos/create-location.dto";
+import { InjectQueue } from "@nestjs/bullmq";
+import { Queue } from "bullmq";
+import { NotificationType } from "src/types/notification";
 
 @Injectable()
 export class LocationService {
   constructor(
     @InjectRepository(Location)
     private readonly locationRepository: Repository<Location>,
+    @InjectQueue("notification") private readonly queue: Queue,
   ) {}
 
   async getLocations() {
@@ -51,18 +55,17 @@ export class LocationService {
   async createLocation({ name, city, country }: CreateLocationDto) {
     try {
       const location = new Location();
-
       location.name = name;
       location.city = city;
       location.country = country;
-      await this.locationRepository.manager.save(location);
 
-      return {
-        id: location.id,
-        name,
-        country,
-        city,
-      };
+      await this.queue.add(
+        NotificationType[NotificationType.LOCATION_CREATED],
+        {
+          locationId: location.id,
+        },
+      );
+      return await this.locationRepository.manager.save(location);
     } catch (cause) {
       throw new HttpException(
         `Error creating user ${name}`,

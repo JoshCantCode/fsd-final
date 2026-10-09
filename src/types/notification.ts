@@ -4,11 +4,13 @@ export enum NotificationType {
   LOCATION_CREATED,
   LOCATION_DELETED,
   ORDER_CREATED,
+  LISTING_DELETED,
 
   // user
   ORDER_PAID,
   ORDER_FAILED,
   LISTING_CREATED,
+  LISTING_UPDATED,
 }
 
 // if any of these is accessed by a non-admin it doesnt send the notification
@@ -18,6 +20,7 @@ export const ADMIN_NOTIFICATIONS = [
   NotificationType.USER_DELETED,
   NotificationType.LOCATION_CREATED,
   NotificationType.LOCATION_DELETED,
+  NotificationType.LISTING_DELETED,
 ];
 
 type UserCreatedMetadata = {
@@ -53,6 +56,14 @@ type ListingCreatedMetadata = {
   listingId: string;
 };
 
+type ListingUpdatedMetadata = {
+  listingId: string;
+};
+
+type ListingDeletedMetadata = {
+  listingId: string;
+};
+
 export type NotificationMetadata =
   | UserCreatedMetadata
   | UserDeletedMetadata
@@ -61,4 +72,6 @@ export type NotificationMetadata =
   | OrderCreatedMetadata
   | OrderPaidMetadata
   | OrderFailedMetadata
-  | ListingCreatedMetadata;
+  | ListingCreatedMetadata
+  | ListingDeletedMetadata
+  | ListingUpdatedMetadata;

@@ -1,8 +1,11 @@
+import { InjectQueue } from "@nestjs/bullmq";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Queue } from "bullmq";
 import { CreateOrderDto } from "src/dtos/create-order.dto";
 import Order from "src/entities/order.entity";
 import { ListingService } from "src/listing/listing.service";
+import { NotificationType } from "src/types/notification";
 import { UserService } from "src/user/user.service";
 import { Repository } from "typeorm";
 
@@ -13,6 +16,7 @@ export class OrderService {
     private readonly orderRepository: Repository<Order>,
     private readonly userService: UserService,
     private readonly listingService: ListingService,
+    @InjectQueue("notification") private readonly queue: Queue,
   ) {}
 
   async createOrder(body: CreateOrderDto) {
@@ -33,6 +37,10 @@ export class OrderService {
     order.listing = listing!;
     order.arrival = new Date(Number(arrival) * 1000);
     order.departure = new Date(Number(departure) * 1000);
+
+    await this.queue.add(NotificationType[NotificationType.ORDER_CREATED], {
+      orderId: order.id,
+    });
 
     return await this.orderRepository.save(order);
   }

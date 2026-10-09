@@ -11,6 +11,9 @@ import Listing from "src/entities/listing.entity";
 import { LocationService } from "src/location/location.service";
 import { UserRole } from "src/types/user";
 import { Repository } from "typeorm";
+import { InjectQueue } from "@nestjs/bullmq";
+import { Queue } from "bullmq";
+import { NotificationType } from "src/types/notification";
 
 @Injectable()
 export class ListingService {
@@ -18,6 +21,7 @@ export class ListingService {
     @InjectRepository(Listing)
     private readonly listingRepository: Repository<Listing>,
     private readonly locationService: LocationService,
+    @InjectQueue("notification") private queue: Queue,
   ) {}
 
   async getListings() {
@@ -40,6 +44,10 @@ export class ListingService {
     listing.type = type;
     listing.location = await this.locationService.getLocation(locationId);
 
+    await this.queue.add(NotificationType[NotificationType.LISTING_CREATED], {
+      listingId: listing.id,
+    });
+
     return await this.listingRepository.save(listing);
   }
 
@@ -60,6 +68,10 @@ export class ListingService {
     if (price !== undefined) listing.price = price;
     if (type !== undefined) listing.type = type;
 
+    await this.queue.add(NotificationType[NotificationType.LISTING_UPDATED], {
+      listingId: listing.id,
+    });
+
     return await this.listingRepository.save(listing);
   }
 
@@ -68,6 +80,10 @@ export class ListingService {
     this.assertManagesLocation(actor, listing.location?.id);
 
     await this.listingRepository.remove(listing);
+
+    await this.queue.add(NotificationType[NotificationType.LISTING_DELETED], {
+      listingId: listing.id,
+    });
 
     return {
       status: 200,
