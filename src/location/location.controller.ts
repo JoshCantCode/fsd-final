@@ -15,16 +15,16 @@ export class LocationController {
     return await this.locationService.getLocations();
   }
 
-  @Get(":id")
-  @AllowAnonymous()
-  async getLocation(@Param("id") id: string) {
-    return await this.locationService.getLocation(id);
-  }
-
   @Get(":id/listings")
   @AllowAnonymous()
   async getListings(@Param("id") id: string) {
     return await this.locationService.getListings(id);
+  }
+
+  @Get(":id")
+  @AllowAnonymous()
+  async getLocation(@Param("id") id: string) {
+    return await this.locationService.getLocation(id);
   }
 
   @Post()

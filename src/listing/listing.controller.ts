@@ -25,12 +25,6 @@ export class ListingController {
     return await this.listingService.getListings();
   }
 
-  @Get(":id")
-  @AllowAnonymous()
-  async getListing(@Param("id") id: string) {
-    return await this.listingService.getListing(id);
-  }
-
   @Post()
   @RequireRole(UserRole.MANAGER)
   async createListing(
@@ -54,5 +48,11 @@ export class ListingController {
   @RequireRole(UserRole.MANAGER)
   async deleteListing(@AuthUser() user: SessionUser, @Param("id") id: string) {
     return await this.listingService.deleteListing(id, user);
+  }
+
+  @Get(":id")
+  @AllowAnonymous()
+  async getListing(@Param("id") id: string) {
+    return await this.listingService.getListing(id);
   }
 }

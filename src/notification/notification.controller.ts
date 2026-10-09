@@ -9,11 +9,6 @@ import { NotificationService } from "./notification.service";
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @Get(":id")
-  async getNotification(@Param("id") id: string) {
-    return await this.notificationService.getNotification(id);
-  }
-
   @Post()
   @RequireRole(UserRole.MANAGER)
   async createNotification(
@@ -24,5 +19,10 @@ export class NotificationController {
       ...body,
       isAdmin: user.role >= UserRole.ADMIN,
     });
+  }
+
+  @Get(":id")
+  async getNotification(@Param("id") id: string) {
+    return await this.notificationService.getNotification(id);
   }
 }

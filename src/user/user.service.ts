@@ -38,6 +38,10 @@ export class UserService {
     return await this.getUser(id);
   }
 
+  async getCurrentUser(actor: SessionUser): Promise<User> {
+    return await this.getUser(actor.id);
+  }
+
   private assertCanReadUser(actor: SessionUser, id: string) {
     if (actor.role >= UserRole.ADMIN) return;
 
@@ -95,6 +99,7 @@ export class UserService {
         bookings: true,
         billing: true,
         watchlist: true,
+        notifications: true,
       },
     });
 
@@ -170,7 +175,10 @@ export class UserService {
     };
   }
 
-
+  async getNotifications(id: string) {
+    const user = await this.getUser(id);
+    return user.notifications;
+  }
 
   async addToWatchlist({
     userId,
@@ -181,13 +189,24 @@ export class UserService {
   }) {
     const user = await this.getUser(userId);
     const location = await this.locationService.getLocation(locationId);
+    if (!user.watchlist.find((l) => l == location)) {
+      user.watchlist.push(location);
+      await this.userRepository.save(user);
+      return {
+        status: 200,
+        message: "Location added to users watchlist!",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Location is already inside users watchlist!",
+      };
+    }
+  }
 
-    user.watchlist.push(location);
-    await this.userRepository.save(user);
-    return {
-      status: 200,
-      message: "Location added to users watchlist!",
-    };
+  async getUsersWatchedLocations(userId: string) {
+    const user = await this.getUser(userId);
+    return user.watchlist;
   }
 
   async getUsersWhoAreWatching(locationId: string) {

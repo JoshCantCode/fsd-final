@@ -23,11 +23,6 @@ export class UserController {
     return await this.userService.getUsersAs(user);
   }
 
-  @Get(":id")
-  async getUser(@AuthUser() user: SessionUser, @Param("id") id: string) {
-    return await this.userService.getUserAs(id, user);
-  }
-
   @Post()
   @RequireRole(UserRole.ADMIN)
   async createUser(@Body() body: CreateUserDto) {
@@ -46,15 +41,39 @@ export class UserController {
     return await this.userService.deleteUser(id);
   }
 
+  // for the functions below, we don't need to specify the ID as they are all user-specific things
+
   @Patch("watch/:locationId")
   @RequireRole(UserRole.MEMBER)
   async watchLocation(
     @AuthUser() user: SessionUser,
     @Param("locationId") locationId: string,
   ) {
+    const u = await this.userService.getCurrentUser(user);
     return await this.userService.addToWatchlist({
-      userId: user.id,
+      userId: u.id,
       locationId,
     });
+  }
+
+  @Get("notifications")
+  @RequireRole(UserRole.MEMBER)
+  async getNotifications(@AuthUser() user: SessionUser) {
+    const u = await this.userService.getCurrentUser(user);
+    return await this.userService.getNotifications(u.id);
+  }
+
+  @Get("watched")
+  @RequireRole(UserRole.MEMBER)
+  async getWatchedLocations(@AuthUser() user: SessionUser) {
+    const u = await this.userService.getCurrentUser(user);
+    return await this.userService.getUsersWatchedLocations(u.id);
+  }
+
+  // this has to be at the bottom otherwise any thing in the first slot is percepted to be an ID
+
+  @Get(":id")
+  async getUser(@AuthUser() user: SessionUser, @Param("id") id: string) {
+    return await this.userService.getUserAs(id, user);
   }
 }
